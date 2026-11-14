@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:#fff;color:#0A0A0A;font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:#F5F5F5;}
+::-webkit-scrollbar-thumb{background:#CCC;border-radius:3px;}
+:focus-visible{outline:2px solid #000;outline-offset:2px;}
+
+@layer components {
+  .btn-primary{@apply bg-black text-white px-6 py-3 text-xs tracking-widest uppercase font-medium transition-all duration-200 hover:bg-zinc-800 inline-flex items-center justify-center gap-2 cursor-pointer;}
+  .btn-outline{@apply border border-black text-black px-6 py-3 text-xs tracking-widest uppercase font-medium transition-all duration-200 hover:bg-black hover:text-white inline-flex items-center justify-center gap-2 cursor-pointer;}
+  .btn-outline-white{@apply border border-white text-white px-6 py-3 text-xs tracking-widest uppercase font-medium transition-all duration-200 hover:bg-white hover:text-black inline-flex items-center justify-center gap-2 cursor-pointer;}
+  .btn-sm{@apply px-3 py-1.5 text-xs tracking-widest uppercase font-medium transition-all duration-200 cursor-pointer inline-flex items-center gap-1.5;}
+  .input-field{@apply w-full border border-site-border bg-white text-site-text px-4 py-3 text-sm focus:outline-none focus:border-black transition-colors;font-family:'Montserrat',sans-serif;}
+  .label-field{@apply block text-xs tracking-widest uppercase text-site-text2 mb-2 font-medium;}
+  .section-title{font-family:'Cormorant Garamond',serif;@apply text-3xl md:text-4xl font-light tracking-wider text-black;}
+  .section-divider{@apply w-12 h-px bg-black mx-auto my-4;}
+}
+
+@keyframes fadeInUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.animate-fade-in-up{animation:fadeInUp 0.5s ease-out forwards;}
+
+/* Fix select dropdown options visibility */
+select option {
+  background-color: #ffffff;
+  color: #0A0A0A;
+}
+select option:checked,
+select option:hover {
+  background-color: #F5F5F5;
+  color: #0A0A0A;
+}

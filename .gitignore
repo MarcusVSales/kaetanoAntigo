@@ -1,0 +1,20 @@
+# Dependências e builds
+node_modules/
+.next/
+dist/
+build/
+
+# Segredos — NUNCA versionar (use os arquivos .env.example como modelo)
+.env
+.env.*
+!.env.example
+*.pem
+
+# Dados reais do negócio (banco com vendas/compradores e fotos enviadas)
+backend/data/
+backend/uploads/
+
+# Sistema / logs
+.DS_Store
+Thumbs.db
+*.log
