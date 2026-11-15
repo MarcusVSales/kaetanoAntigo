@@ -143,6 +143,17 @@ function AdminDashboard() {
     catch { toast.error('Erro'); }
   };
 
+const setImageOrder = async (pid, iid, position) => {
+  try {
+    await productsAPI.setImageOrder(pid, iid, Number(position));
+    toast.success('Posição atualizada!');
+    await openImgManager(pid);
+    load();
+  } catch {
+    toast.error('Erro ao atualizar posição');
+  }
+};
+
   const openCrop = (product, image) => {
     setCropProduct(product);
     setCropImage(image);
@@ -481,7 +492,7 @@ function AdminDashboard() {
                           className="w-full h-full object-cover"
                           crossOrigin="anonymous"
                         />
-                        {img.is_primary&&(
+                        {Boolean(img.is_primary) && (
                           <span className="absolute top-2 left-2 bg-black text-white text-xs px-2 py-0.5 font-medium">Principal</span>
                         )}
                       </div>
@@ -495,7 +506,7 @@ function AdminDashboard() {
                             <Star size={11}/> Destaque
                           </button>
                         )}
-                        {img.is_primary&&(
+                        {Boolean(img.is_primary) && (
                           <div className="w-full flex items-center justify-center gap-1.5 bg-black text-white text-xs py-1.5 tracking-wider uppercase font-medium">
                             <Star size={11} className="fill-white"/> Foto Principal
                           </div>
@@ -511,6 +522,39 @@ function AdminDashboard() {
                           className="w-full flex items-center justify-center gap-1.5 border border-red-200 text-red-500 text-xs py-1.5 tracking-wider uppercase hover:bg-red-500 hover:text-white transition-all">
                           <Trash2 size={11}/> Remover
                         </button>
+                        <div className="flex items-center gap-2 mt-2">
+                        <label className="text-xs text-site-text2">
+                          Posição:
+                        </label>
+                        <input
+                          key={`${img.id}-${img.order_index}`}
+                          type="number"
+                          min="1"
+                          max={imgList.length}
+                          defaultValue={img.order_index > 0 ? img.order_index : ""}
+                          onBlur={(e) => {
+                            const position = Number(e.target.value);
+
+                            if (
+                              !Number.isInteger(position) ||
+                              position < 1 ||
+                              position > imgList.length
+                            ) {
+                              toast.error(`Escolha uma posição entre 1 e ${imgList.length}`);
+                              e.target.value = img.order_index > 0
+                                ? String(img.order_index)
+                                : "";
+                              return;
+                            }
+
+                            if (position !== img.order_index) {
+                              setImageOrder(imgProduct.id, img.id, position);
+                            }
+                          }}
+                          className="w-16 border border-site-border px-2 py-1 text-sm"
+                        />
+
+                      </div>
                       </div>
                     </div>
                   ))}

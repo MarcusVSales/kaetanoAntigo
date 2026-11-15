@@ -201,11 +201,13 @@ router.post('/:id/images', auth, upload.array('images', 10), async (req, res) =>
   for (const file of accepted) {
     try {
       const filename = await processUpload(file);
-      const idx = count + inserted.length;
+      const idx = (db.prepare(
+      'SELECT COALESCE(MAX(order_index), 0) AS max_order FROM product_images WHERE product_id=?'
+      ).get(req.params.id).max_order || 0) + 1;
       const imgId = uuidv4();
       db.prepare('INSERT INTO product_images (id,product_id,filename,is_primary,order_index) VALUES (?,?,?,?,?)')
-        .run(imgId, req.params.id, filename, idx === 0 ? 1 : 0, idx);
-      inserted.push({ id: imgId, filename, is_primary: idx === 0 ? 1 : 0 });
+      .run(imgId, req.params.id, filename, count === 0 && inserted.length === 0 ? 1 : 0, idx);
+      inserted.push({ id: imgId, filename, is_primary: count === 0 && inserted.length === 0 ? 1 : 0 });
     } catch (e) {
       rejected++; discard([file]);
     }
@@ -243,5 +245,55 @@ router.put('/:id/images/:imgId/primary', auth, (req, res) => {
   db.prepare('UPDATE product_images SET is_primary=1 WHERE id=? AND product_id=?').run(req.params.imgId, req.params.id);
   res.json({ message: 'Imagem principal atualizada' });
 });
+
+
+router.put('/:id/images/:imgId/order', auth, (req, res) => {
+  const db = getDb();
+  const position = Number(req.body.position);
+
+  if (!Number.isInteger(position) || position < 1) {
+    return res.status(400).json({ error: 'Posição inválida' });
+  }
+
+  try {
+    const images = db.prepare(`
+      SELECT id FROM product_images
+      WHERE product_id = ?
+      ORDER BY is_primary DESC, order_index ASC, rowid ASC
+    `).all(req.params.id);
+
+    const currentIndex = images.findIndex(
+      img => img.id === req.params.imgId
+    );
+
+    if (currentIndex === -1) {
+      return res.status(404).json({ error: 'Imagem não encontrada' });
+    }
+
+    if (position > images.length) {
+      return res.status(400).json({ error: 'Posição fora do limite' });
+    }
+
+    const [selected] = images.splice(currentIndex, 1);
+    images.splice(position - 1, 0, selected);
+
+    const update = db.prepare(`
+      UPDATE product_images
+      SET order_index = ?
+      WHERE id = ? AND product_id = ?
+    `);
+
+    images.forEach((img, index) => {
+      update.run(index + 1, img.id, req.params.id);
+    });
+
+    res.json({ message: 'Ordem atualizada' });
+
+  } catch (error) {
+    console.error('Erro ao ordenar fotos:', error);
+    res.status(500).json({ error: 'Erro ao atualizar ordem' });
+  }
+});
+
 
 module.exports = router;

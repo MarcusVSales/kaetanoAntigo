@@ -142,8 +142,9 @@ export default function ProductPage() {
             )}
             {product.description && (
               <div className="mb-8">
-                <h2 className="label-field">Descrição</h2>
-                <p className="font-light text-site-text2 leading-relaxed text-sm">{product.description}</p>
+                <h2 className="label-field">Descrição</h2>               
+                <p className="font-light text-site-text2 leading-relaxed text-sm whitespace-pre-line">{product.description}</p>
+
               </div>
             )}
             {product.quantity > 1 && (
