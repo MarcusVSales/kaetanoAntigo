@@ -44,8 +44,58 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Kaetano Antigo — Móveis das Décadas de 40, 50 e 60</title>
-        <meta name="description" content="Curadoria de móveis e objetos vintage das décadas de 40, 50 e 60."/>
+        
+  
+<Head>
+  <title>Kaetano Antigo | Antiquário e Móveis Antigos em São Paulo</title>
+
+  <meta
+    name="description"
+    content="Conheça a Kaetano Antigo, antiquário em São Paulo. Explore nosso acervo de móveis clássicos e modernistas e encontre mobiliário com história.."
+  />
+
+  <meta
+    name="robots"
+    content="index, follow"
+  />
+
+  <link
+    rel="canonical"
+    href="https://kaetanoantigo.com.br/"
+  />
+
+  <meta
+    property="og:type"
+    content="website"
+  />
+
+  <meta
+    property="og:title"
+    content="Kaetano Antigo | Antiquário em São Paulo"
+  />
+
+  <meta
+    property="og:description"
+    content="Móveis clássicos e modernistas selecionados para ambientes com personalidade."
+  />
+
+  <meta
+    property="og:url"
+    content="https://kaetanoantigo.com.br/"
+  />
+
+  <meta
+    property="og:locale"
+    content="pt_BR"
+  />
+
+  <meta
+    property="og:site_name"
+    content="Kaetano Antigo"
+  />
+</Head>
+
+
       </Head>
 
       {/* Hero com imagens de fundo */}

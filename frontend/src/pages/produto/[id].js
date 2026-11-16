@@ -49,10 +49,58 @@ export default function ProductPage() {
 
   return (
     <>
-      <Head>
-        <title>{product.name} — Kaetano Antigo</title>
-        <meta name="description" content={product.description || product.name}/>
-      </Head>
+     
+<Head>
+  <title>{`${product.name} | Kaetano Antigo`}</title>
+
+  <meta
+    name="description"
+    content={
+      product.description
+        ? product.description.replace(/\s+/g, ' ').slice(0, 155)
+        : `${product.name}. Conheça esta peça do acervo da Kaetano Antigo, antiquário especializado em móveis clássicos e modernistas em São Paulo.`
+    }
+  />
+
+  <meta name="robots" content="index, follow" />
+
+  <link
+    rel="canonical"
+    href={`https://kaetanoantigo.com.br/produto/${encodeURIComponent(id)}`}
+  />
+
+  <meta property="og:type" content="product" />
+
+  <meta
+    property="og:title"
+    content={`${product.name} | Kaetano Antigo`}
+  />
+
+  <meta
+    property="og:description"
+    content={
+      product.description
+        ? product.description.replace(/\s+/g, ' ').slice(0, 155)
+        : `Conheça ${product.name} no acervo da Kaetano Antigo.`
+    }
+  />
+
+  {images[0]?.filename && (
+    <meta
+      property="og:image"
+      content={getImageUrl(images[0].filename)}
+    />
+  )}
+
+  <meta
+    property="og:url"
+    content={`https://kaetanoantigo.com.br/produto/${encodeURIComponent(id)}`}
+  />
+
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:site_name" content="Kaetano Antigo" />
+</Head>
+
 
       {lightbox && (
         <ImageLightbox src={currentImg} alt={product.name} total={total}

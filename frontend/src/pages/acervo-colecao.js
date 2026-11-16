@@ -61,9 +61,59 @@ export default function AcervoColecao() {
 
   return (
     <>
-      <Head>
-        <title>{activeCategory?`${activeCategory} — `:''}Acervo — Kaetano Antigo</title>
-        <meta name="description" content="Explore nosso acervo de móveis vintage"/>
+        
+<Head>
+  <title>
+    {activeCategory
+      ? `${activeCategory} | Acervo Kaetano Antigo`
+      : 'Acervo de Móveis Antigos e Modernistas | Kaetano Antigo'}
+  </title>
+
+  <meta
+    name="description"
+    content="Explore o acervo da Kaetano Antigo, antiquário em São Paulo. Encontre móveis clássicos, modernistas e peças selecionadas para ambientes com personalidade."
+  />
+
+  <meta
+    name="robots"
+    content="index, follow"
+  />
+
+  <link
+    rel="canonical"
+    href="https://kaetanoantigo.com.br/acervo-colecao"
+  />
+
+  <meta
+    property="og:type"
+    content="website"
+  />
+
+  <meta
+    property="og:title"
+    content="Acervo de Móveis Antigos e Modernistas | Kaetano Antigo"
+  />
+
+  <meta
+    property="og:description"
+    content="Conheça nossa seleção de móveis clássicos e modernistas em São Paulo."
+  />
+
+  <meta
+    property="og:url"
+    content="https://kaetanoantigo.com.br/acervo-colecao"
+  />
+
+  <meta
+    property="og:locale"
+    content="pt_BR"
+  />
+
+  <meta
+    property="og:site_name"
+    content="Kaetano Antigo"
+  />
+
       </Head>
       <section className="text-center py-14 bg-site-bg2 border-b border-site-border">
         <h1 className="section-title">{activeCategory || 'Acervo'}</h1>
