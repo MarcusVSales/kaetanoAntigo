@@ -2,12 +2,11 @@ const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const config = require('../config');
 const { validatePassword } = require('./password');
-const { getDb } = require('../database/connection');
+const db = require('../database/db');
 
 // Cria o admin só no startup (nunca durante um login) e sem senha padrão.
 async function ensureAdmin() {
-  const db = getDb();
-  let admin = db.prepare('SELECT * FROM admin_users ORDER BY created_at LIMIT 1').get();
+  let admin = await db.get('SELECT * FROM admin_users ORDER BY created_at LIMIT 1');
 
   if (!admin) {
     if (!config.adminPassword) {
@@ -17,8 +16,7 @@ async function ensureAdmin() {
     const weak = validatePassword(config.adminPassword, config.adminUsername);
     if (weak) { console.error(`\n❌ ADMIN_PASSWORD recusada: ${weak} Corrija em backend/.env.\n`); process.exit(1); }
     const hash = await bcrypt.hash(config.adminPassword, 12);
-    db.prepare('INSERT INTO admin_users (id, username, password_hash, email) VALUES (?, ?, ?, ?)')
-      .run(uuidv4(), config.adminUsername, hash, config.adminEmail || null);
+    await db.run('INSERT INTO admin_users (id, username, password_hash, email) VALUES (?, ?, ?, ?)', [uuidv4(), config.adminUsername, hash, config.adminEmail || null]);
     console.log(`👤 Administrador "${config.adminUsername}" criado. Depois do 1º acesso, pode remover ADMIN_PASSWORD do .env.`);
     return;
   }
@@ -28,7 +26,7 @@ async function ensureAdmin() {
   }
 
   if (config.adminEmail && (admin.email || '').toLowerCase() !== config.adminEmail) {
-    db.prepare('UPDATE admin_users SET email = ? WHERE id = ?').run(config.adminEmail, admin.id);
+    await db.run('UPDATE admin_users SET email = ? WHERE id = ?', [config.adminEmail, admin.id]);
     console.log(`📧 E-mail de recuperação do admin atualizado para ${config.adminEmail}`);
   } else if (!admin.email) {
     console.warn('⚠️  O admin não tem e-mail cadastrado: a recuperação de senha não vai funcionar. Defina ADMIN_EMAIL no .env.');

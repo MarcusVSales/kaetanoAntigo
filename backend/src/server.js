@@ -5,8 +5,9 @@ const helmet      = require('helmet');
 const compression = require('compression');
 const rateLimit   = require('express-rate-limit');
 const path        = require('path');
-const { initDb }  = require('./database/connection');
-const { ensureSchema, migrateCategories } = require('./database/schema');
+const { testConnection } = require('./database/mysql');
+const { ensureMySqlSchema } = require('./database/mysql-schema');
+const db = require('./database/db');
 const { ensureAdmin }  = require('./services/bootstrap');
 
 const app = express();
@@ -41,24 +42,30 @@ app.use('/api/auth/reset-password', limiter(60, 10, 'Muitas tentativas. Tente no
 app.use('/api/analytics/collect', limiter(5, 300, 'Limite excedido.'));
 
 // Nomes de arquivo são UUIDs imutáveis → o navegador pode guardar por 1 ano (carregamento instantâneo na 2ª visita)
-app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
-  maxAge: '365d', immutable: true, index: false, dotfiles: 'ignore',
-  setHeaders: res => res.setHeader('X-Content-Type-Options', 'nosniff'),
-}));
+app.get('/uploads/:filename', async (req, res, next) => {
+  try {
+    if (!/^[a-f0-9-]{36}(?:-sm)?\.webp$|^[a-f0-9-]{36}\.(?:jpg|jpeg|png)$/i.test(req.params.filename)) return res.sendStatus(404);
+    const file = await db.get('SELECT content_type, content FROM image_files WHERE filename=?', [req.params.filename]);
+    if (!file) return res.sendStatus(404);
+    res.set('Content-Type', file.content_type);
+    res.set('Cache-Control', 'public, max-age=31536000, immutable');
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.send(file.content);
+  } catch (e) { next(e); }
+});
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 (async () => {
-  await initDb();
-  ensureSchema();
-  migrateCategories();
+  await testConnection();
+  await ensureMySqlSchema();
   await ensureAdmin();
 
   app.use('/api/auth',      require('./routes/auth'));
   app.use('/api/products',  require('./routes/products'));
   const analytics = require('./routes/analytics');
   app.use('/api/analytics', analytics);
-  analytics.purgeOld(); setInterval(analytics.purgeOld, 24 * 3600 * 1000).unref();
+  analytics.purgeOld().catch(console.error); setInterval(() => analytics.purgeOld().catch(console.error), 24 * 3600 * 1000).unref();
 
   app.use('/api', (req, res) => res.status(404).json({ error: 'Rota não encontrada' }));
   app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
