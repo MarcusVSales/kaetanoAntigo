@@ -62,8 +62,23 @@ router.get('/', async (req, res) => {
   const { category, featured } = req.query;
     let sql = `
     SELECT ${PUBLIC_COLS},
-      (SELECT filename FROM product_images WHERE product_id=p.id AND is_primary=1 LIMIT 1) AS primary_image,
-      (SELECT crop_data FROM product_images WHERE product_id=p.id AND is_primary=1 LIMIT 1) AS primary_crop,
+     (
+  SELECT filename
+  FROM product_images
+  WHERE product_id=p.id
+    AND (is_hero=1 OR is_primary=1)
+  ORDER BY is_hero DESC
+  LIMIT 1
+) AS primary_image,
+
+(
+  SELECT crop_data
+  FROM product_images
+  WHERE product_id=p.id
+    AND (is_hero=1 OR is_primary=1)
+  ORDER BY is_hero DESC
+  LIMIT 1
+) AS primary_crop,
       (SELECT COUNT(*) FROM product_images WHERE product_id=p.id) AS image_count
     FROM products p WHERE p.visible=1 AND p.sold=0`;
   const params = [];
@@ -223,6 +238,23 @@ router.put('/:id/images/:imgId/primary', auth, async (req, res) => {
   if (!found) return res.status(404).json({ error: 'Imagem não encontrada' });
   await db.run('UPDATE product_images SET is_primary=IF(id=?,1,0) WHERE product_id=?', [req.params.imgId,req.params.id]);
   res.json({ message: 'Imagem principal atualizada' });
+});
+router.put('/:id/images/:imgId/hero', auth, async (req, res) => {
+  const found = await db.get(
+    'SELECT id FROM product_images WHERE id=? AND product_id=?',
+    [req.params.imgId, req.params.id]
+  );
+
+  if (!found) {
+    return res.status(404).json({ error: 'Imagem não encontrada' });
+  }
+
+  await db.run(
+    'UPDATE product_images SET is_hero=IF(id=?,1,0) WHERE product_id=?',
+    [req.params.imgId, req.params.id]
+  );
+
+  res.json({ message: 'Imagem da Hero atualizada' });
 });
 
 

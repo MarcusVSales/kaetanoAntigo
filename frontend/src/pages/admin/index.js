@@ -138,10 +138,27 @@ function AdminDashboard() {
     catch { toast.error('Erro'); }
   };
 
-  const setPrimary = async (pid, iid) => {
-    try { await productsAPI.setPrimaryImage(pid,iid); toast.success('Foto de destaque definida!'); openImgManager(pid); load(); }
-    catch { toast.error('Erro'); }
-  };
+ const setPrimary = async (pid, iid) => {
+  try {
+    await productsAPI.setPrimaryImage(pid, iid);
+    toast.success('Foto principal definida!');
+    openImgManager(pid);
+    load();
+  } catch {
+    toast.error('Erro');
+  }
+};
+
+const setHero = async (pid, iid) => {
+  try {
+    await productsAPI.setHeroImage(pid, iid);
+    toast.success('Foto da Hero definida!');
+    openImgManager(pid);
+    load();
+  } catch {
+    toast.error('Erro');
+  }
+};
 
 const setImageOrder = async (pid, iid, position) => {
   try {
@@ -500,16 +517,16 @@ const setImageOrder = async (pid, iid, position) => {
                       {/* Botões de ação */}
                       <div className="flex flex-col gap-1.5 mt-2">
                         {/* Botão Destaque — define foto principal */}
-                        {!img.is_primary&&(
-                          <button onClick={()=>setPrimary(imgProduct.id,img.id)}
+                        {!img.is_hero && (
+                          <button onClick={() => setHero(imgProduct.id,img.id)}
                             className="w-full flex items-center justify-center gap-1.5 border border-black text-black text-xs py-1.5 tracking-wider uppercase font-medium hover:bg-black hover:text-white transition-all">
                             <Star size={11}/> Destaque
                           </button>
                         )}
-                        {Boolean(img.is_primary) && (
-                          <div className="w-full flex items-center justify-center gap-1.5 bg-black text-white text-xs py-1.5 tracking-wider uppercase font-medium">
-                            <Star size={11} className="fill-white"/> Foto Principal
-                          </div>
+                        {Boolean(img.is_hero) && (
+                        <div className="w-full flex items-center justify-center gap-1.5 bg-black text-white text-xs py-1.5 tracking-wider uppercase font-medium">
+                          <Star size={11} className="fill-white"/> Hero
+                        </div>
                         )}
                         {/* Botão Recortar */}
                         <button onClick={()=>openCrop(imgProduct,img)}

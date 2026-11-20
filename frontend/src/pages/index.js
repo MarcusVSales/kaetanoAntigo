@@ -109,7 +109,7 @@ export default function Home() {
           return (
             <div
               key={p.id}
-              className={`absolute inset-0 transition-opacity duration-1000 ${i === heroBg ? 'opacity-35' : 'opacity-0'}`}
+              className={`absolute inset-0 transition-opacity duration-1000 ${i === heroBg ? 'opacity-60' : 'opacity-0'}`}
               aria-hidden="true"
             >
               {near && (
@@ -123,7 +123,7 @@ export default function Home() {
             </div>
           );
         })}
-        <div className="absolute inset-0 bg-black/55" aria-hidden="true"/>
+        <div className="absolute inset-0 bg-black/30" aria-hidden="true"/>
 
         {featured.length > 1 && (
           <>

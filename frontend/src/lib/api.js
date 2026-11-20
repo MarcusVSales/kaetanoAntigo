@@ -89,6 +89,7 @@ export const productsAPI = {
   },
   deleteImage:     (pid, iid)       => api.delete(`/products/${pid}/images/${iid}`),
   setPrimaryImage: (pid, iid)       => api.put(`/products/${pid}/images/${iid}/primary`),
+  setHeroImage: (pid, iid) =>api.put(`/products/${pid}/images/${iid}/hero`),
   saveCrop:        (pid, iid, crop) => api.put(`/products/${pid}/images/${iid}/crop`, { crop_data: crop }),
   setImageOrder: (pid, iid, position) =>
   api.put(`/products/${pid}/images/${iid}/order`, {
