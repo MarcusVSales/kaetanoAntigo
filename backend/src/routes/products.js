@@ -61,6 +61,7 @@ const PUBLIC_COLS = 'p.id, p.name, p.description, p.category, p.price, p.quantit
 router.get('/', async (req, res) => {
   const { category, featured } = req.query;
     let sql = `
+    SELECT ${PUBLIC_COLS},
  (SELECT filename
  FROM product_images
  WHERE product_id=p.id
