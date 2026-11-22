@@ -63,30 +63,22 @@ router.get('/', async (req, res) => {
     let sql = `
     SELECT ${PUBLIC_COLS},
      (
-  (SELECT filename
- FROM product_images
- WHERE product_id=p.id
- AND is_primary=1
- LIMIT 1) AS primary_image,
+  SELECT filename
+  FROM product_images
+  WHERE product_id=p.id
+    AND (is_hero=1 OR is_primary=1)
+  ORDER BY is_hero DESC
+  LIMIT 1
+) AS primary_image,
 
-(SELECT crop_data
- FROM product_images
- WHERE product_id=p.id
- AND is_primary=1
- LIMIT 1) AS primary_crop,
-
-(SELECT filename
- FROM product_images
- WHERE product_id=p.id
- AND is_hero=1
- LIMIT 1) AS hero_image,
-
-(SELECT crop_data
- FROM product_images
- WHERE product_id=p.id
- AND is_hero=1
- LIMIT 1) AS hero_crop,
-
+(
+  SELECT crop_data
+  FROM product_images
+  WHERE product_id=p.id
+    AND (is_hero=1 OR is_primary=1)
+  ORDER BY is_hero DESC
+  LIMIT 1
+) AS primary_crop,
       (SELECT COUNT(*) FROM product_images WHERE product_id=p.id) AS image_count
     FROM products p WHERE p.visible=1 AND p.sold=0`;
   const params = [];
@@ -277,7 +269,7 @@ router.put('/:id/images/:imgId/order', auth, async (req, res) => {
     const images = await db.all(`
       SELECT id FROM product_images
       WHERE product_id = ?
-       ORDER BY order_index ASC, id ASC
+      ORDER BY is_primary DESC, order_index ASC, id ASC
     `, [req.params.id]);
 
     const currentIndex = images.findIndex(
