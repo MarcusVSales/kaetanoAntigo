@@ -4,6 +4,7 @@ export const CATEGORIES = [
   'Cadeiras',
   'Poltronas e Sofás',
   'Mesas',
+  'Mesinhas',
   'Buffets e Aparadores',
   'Armários e Estantes',
   'Cômodas e Gaveteiros',

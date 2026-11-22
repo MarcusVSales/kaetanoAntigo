@@ -102,7 +102,14 @@ export default function Home() {
       <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden bg-black" aria-label="Banner">
         {featured.map((p, i) => {
           // Enquadramento salvo no editor de recorte (posição E zoom, inclusive abaixo de 100%)
-          const crop = p.primary_crop ? (() => { try { return JSON.parse(p.primary_crop); } catch { return null; } })() : null;
+          const crop = (p.hero_crop || p.primary_crop) ? (() => {
+          try {
+            return JSON.parse(p.hero_crop || p.primary_crop);
+          } catch {
+            return null;
+          }
+          })()
+          : null;
           // Só a foto atual e as vizinhas são baixadas; as outras esperam a vez (menos dados no 1º carregamento)
           const near = i === heroBg || i === (heroBg + 1) % featured.length || i === (heroBg - 1 + featured.length) % featured.length;
 
@@ -114,7 +121,7 @@ export default function Home() {
             >
               {near && (
                 <CroppedImage
-                  src={getImageUrl(p.primary_image)}
+                src={getImageUrl(p.hero_image || p.primary_image)}
                   crop={crop}
                   imgProps={{ fetchPriority: i === 0 ? 'high' : 'auto' }}
                   onError={e => { e.currentTarget.style.display = 'none'; }}
